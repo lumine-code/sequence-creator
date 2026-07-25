@@ -7,9 +7,12 @@
     "url": "https://github.com/lumine-code/sequence-creator/issues"
   },
   "keywords": [
-    "sequence",
-    "creator",
-    "number"
+    "increment",
+    "counter",
+    "number",
+    "multi-cursor",
+    "generate",
+    "enumerate"
   ],
   "version": "1.0.0",
   "license": "MIT",
