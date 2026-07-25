@@ -1,51 +1,45 @@
 # sequence-creator
 
-Generate sequences of numbers or characters across multiple cursors.
-
-Fork of [sequential-number](https://github.com/asiloisad/sequential-number).
+Generate sequences of numbers or characters across multiple cursors. Type a short expression and a preview of the generated sequence is shown before it is inserted.
 
 ## Features
 
-- **Number sequences**: Generate incrementing/decrementing numbers.
-- **Character sequences**: Generate alphabetic sequences (a, b, c...).
-- **Custom step**: Configure increment step and radix.
-- **Padding support**: Zero-pad or custom-pad output.
-- **Repeat option**: Repeat each value multiple times.
+- **Number sequences**: generate incrementing or decrementing numbers.
+- **Character sequences**: generate alphabetic sequences (a, b, c, ...).
+- **Custom step**: configure increment step and radix.
+- **Padding support**: zero-pad or custom-pad output.
+- **Repeat option**: repeat each value multiple times.
+- **Live preview**: simulate the sequence while typing.
 
 ## Installation
 
-To install `sequence-creator` search for [sequence-creator](https://web.pulsar-edit.dev/packages/sequence-creator) in the Install pane of the Pulsar settings or run `ppm install sequence-creator`. Alternatively, you can run `ppm install asiloisad/pulsar-sequence-creator` to install a package directly from the GitHub repository.
+To install `sequence-creator` search for _sequence-creator_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/sequence-creator`.
 
 ## Commands
 
 Commands available in `atom-text-editor:not([mini])`:
 
-- `sequence-creator:open`: open creator window.
+- `sequence-creator:open`: open the sequence creator window.
 
-Commands available in `.sequence-creator`:
+## Usage
 
-- `sequence-creator:done`: apply sequence,
-- `sequence-creator:close`: close creator window.
-
-## Syntax rules
+The input expression follows the syntax:
 
 ```
 <start><operator><step><#radix><:padding><^repeat><flags>
 ```
 
-| Key | Default | Definition |
-| --- | --- | --- |
-| start | _mandatory_ | item that you start typing, e.g. `1`, `-1`, `+1`, `21`, `a`, `ac`, `aC` |
-| operator | `+` | operation to calculate next step value: `+` or `-` |
-| step | `1` | integer to be added or subtracted, e.g. `2`, `-2`, `+2` |
-| radix | 10 | The integer between 2 and 36 that represents radix |
-| padding | _empty_ | The padding command, e.g. `<2`, ` <2`, `0<2`, `a<2` |
-| repeat | 1 | An index repeat count as positive integer |
-| flags | _empty_ | A mix of letters:<br/>`!` reorder cursors by position<br/>`@` print plus sign if positive |
+| Key      | Default     | Definition                                                                                |
+| -------- | ----------- | ----------------------------------------------------------------------------------------- |
+| start    | _mandatory_ | item that you start typing, e.g. `1`, `-1`, `+1`, `21`, `a`, `ac`, `aC`                   |
+| operator | `+`         | operation to calculate next step value: `+` or `-`                                        |
+| step     | `1`         | integer to be added or subtracted, e.g. `2`, `-2`, `+2`                                   |
+| radix    | 10          | the integer between 2 and 36 that represents radix                                        |
+| padding  | _empty_     | the padding command, e.g. `<2`, ` <2`, `0<2`, `a<2`                                       |
+| repeat   | 1           | an index repeat count as positive integer                                                 |
+| flags    | _empty_     | a mix of letters:<br/>`!` reorder cursors by position<br/>`@` print plus sign if positive |
 
-#### Examples
-
-The following sample the cursor length is `5`.
+Examples with a cursor count of `5`:
 
 ```
 Input

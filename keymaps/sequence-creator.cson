@@ -1,2 +1,0 @@
-'atom-text-editor:not([mini])':
-  'alt-0': 'sequence-creator:open'

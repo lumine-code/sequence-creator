@@ -1,18 +1,28 @@
 {
   "name": "sequence-creator",
+  "author": "lumine-code",
   "description": "Generate sequences of numbers or characters across multiple cursors",
-  "repository": "https://github.com/asiloisad/pulsar-sequence-creator",
+  "repository": "https://github.com/lumine-code/sequence-creator",
+  "bugs": {
+    "url": "https://github.com/lumine-code/sequence-creator/issues"
+  },
   "keywords": [
     "sequence",
     "creator",
     "number"
   ],
-  "version": "1.1.2",
+  "version": "2.0.0",
   "license": "MIT",
   "engines": {
     "atom": ">=1.100.0 <2.0.0"
   },
   "main": "./lib/main",
+  "scripts": {
+    "test": "cd ../lumine && npm run test:only -- ../sequence-creator/spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
   "activationCommands": {
     "atom-text-editor:not([mini])": [
       "sequence-creator:open"
@@ -20,7 +30,6 @@
   },
   "configSchema": {
     "simulateCursorLength": {
-      "order": 1,
       "title": "Maximum preview items",
       "description": "The maximum count of cursor items shown in the preview.",
       "type": "integer",
@@ -29,11 +38,18 @@
       "default": 7
     },
     "alphabetSequence": {
-      "order": 2,
       "title": "Alphabet sequence",
       "description": "A series of letters used to generate a character sequence.",
       "type": "string",
       "default": "abcdefghijklmnopqrstuvwxyz"
     }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.2.2",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.6"
   }
 }
