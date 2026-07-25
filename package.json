@@ -1,7 +1,7 @@
 {
   "name": "sequence-creator",
   "author": "lumine-code",
-  "description": "Generate sequences of numbers or characters across multiple cursors",
+  "description": "Generate sequences of numbers or characters across multiple cursors.",
   "repository": "https://github.com/lumine-code/sequence-creator",
   "bugs": {
     "url": "https://github.com/lumine-code/sequence-creator/issues"

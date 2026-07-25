@@ -1,6 +1,8 @@
 # sequence-creator
 
-Generate sequences of numbers or characters across multiple cursors. Type a short expression and a preview of the generated sequence is shown before it is inserted.
+Generate sequences of numbers or characters across multiple cursors.
+
+Type a short expression and a preview of the generated sequence is shown before it is inserted.
 
 ## Features
 
