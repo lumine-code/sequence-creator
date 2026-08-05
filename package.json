@@ -23,6 +23,12 @@
     "You can fill your cursors with a numbered or alphabetic sequence using {{ 'sequence-creator:open' | keystroke }}"
   ],
   "main": "./lib/main",
+  "files": [
+    "keymaps",
+    "lib",
+    "menus",
+    "spec"
+  ],
   "scripts": {
     "test": "lumine --test spec",
     "lint": "eslint . --max-warnings 0",
