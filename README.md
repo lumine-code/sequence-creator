@@ -19,7 +19,7 @@ To install `sequence-creator` search for _sequence-creator_ in the Install pane 
 
 ## Commands
 
-Commands available in `atom-text-editor:not([mini])`:
+Commands available in `atom-workspace`:
 
 - `sequence-creator:open`: open the sequence creator window.
 
