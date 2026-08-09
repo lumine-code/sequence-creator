@@ -19,7 +19,7 @@ To install `sequence-creator` search for _sequence-creator_ in the Install pane 
 
 ## Commands
 
-Commands available in `atom-workspace`:
+Commands available in `lumine-workspace`:
 
 - `sequence-creator:open`: open the sequence creator window.
 

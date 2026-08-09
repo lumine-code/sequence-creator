@@ -2,21 +2,21 @@ describe("sequence-creator", () => {
   let workspaceElement, editor, editorElement, mainModule, view;
 
   beforeEach(async () => {
-    workspaceElement = atom.views.getView(atom.workspace);
+    workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
-    editor = await atom.workspace.open();
-    editorElement = atom.views.getView(editor);
+    editor = await lumine.workspace.open();
+    editorElement = lumine.views.getView(editor);
 
     // The package defers activation until one of its commands is dispatched.
-    const activation = atom.packages.activatePackage("sequence-creator");
-    atom.commands.dispatch(editorElement, "sequence-creator:open");
+    const activation = lumine.packages.activatePackage("sequence-creator");
+    lumine.commands.dispatch(editorElement, "sequence-creator:open");
     mainModule = (await activation).mainModule;
     view = mainModule.view;
   });
 
   function runSequence(input) {
     view.setText(input);
-    atom.commands.dispatch(view.element, "core:confirm");
+    lumine.commands.dispatch(view.element, "core:confirm");
   }
 
   function placeCursors() {
@@ -31,7 +31,7 @@ describe("sequence-creator", () => {
   });
 
   it("closes the modal panel on core:cancel", () => {
-    atom.commands.dispatch(view.element, "core:cancel");
+    lumine.commands.dispatch(view.element, "core:cancel");
     expect(view.isVisible()).toBe(false);
   });
 
@@ -109,7 +109,7 @@ describe("sequence-creator", () => {
     });
 
     it("caps the preview at the configured length", () => {
-      atom.config.set("sequence-creator.simulateCursorLength", 2);
+      lumine.config.set("sequence-creator.simulateCursorLength", 2);
       placeCursors();
       view.setText("1");
       advanceClock(20);
