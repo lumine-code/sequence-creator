@@ -15,7 +15,7 @@ Type a short expression and a preview of the generated sequence is shown before 
 
 ## Installation
 
-To install `sequence-creator` search for _sequence-creator_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/sequence-creator`.
+To install `sequence-creator` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/sequence-creator`.
 
 ## Commands
 
