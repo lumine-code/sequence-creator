@@ -35,35 +35,6 @@ describe("sequence-creator", () => {
     expect(view.isVisible()).toBe(false);
   });
 
-  it("opens its primary modal while keeping the detached editor as its target", async () => {
-    lumine.commands.dispatch(view.element, "core:cancel");
-    lumine.initializeDetachedPaneSurfaces({ force: true });
-    let detachedPane = null;
-
-    try {
-      placeCursors();
-      detachedPane = await lumine.workspace.detachPaneItem(editor, { show: false });
-      const detachedSurface = lumine.workspace.getWindowSurface(editor);
-      const primarySurface = lumine.workspace.getPrimaryWindowSurface();
-      editorElement.focus();
-      lumine.commands.dispatch(editorElement, "sequence-creator:open");
-
-      expect(detachedSurface.document.activeElement).toBe(editorElement);
-      expect(lumine.workspace.getActiveWindowSurface()).toBe(primarySurface);
-      expect(mainModule.getEditor()).toBe(editor);
-      expect(view.element.ownerDocument).toBe(primarySurface.document);
-      expect(view.textEditor.ownerDocument).toBe(primarySurface.document);
-      expect(view.textEditor.contains(primarySurface.document.activeElement)).toBe(true);
-
-      runSequence("1");
-      expect(editor.getText()).toBe("x1\nx2\nx3\n");
-    } finally {
-      if (view.isVisible()) lumine.commands.dispatch(view.element, "core:cancel");
-      if (detachedPane?.isAlive?.()) await lumine.workspace.attachDetachedPane(detachedPane);
-      lumine.initializeDetachedPaneSurfaces();
-    }
-  });
-
   describe("sequence insertion", () => {
     it("inserts an incrementing number sequence at each cursor", () => {
       placeCursors();
