@@ -35,11 +35,6 @@
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
-  "activationCommands": {
-    "lumine-text-editor:not([mini])": [
-      "sequence-creator:open"
-    ]
-  },
   "configSchema": {
     "simulateCursorLength": {
       "title": "Maximum preview items",
