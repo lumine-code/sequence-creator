@@ -19,9 +19,6 @@
   "engines": {
     "lumine": "^1.0.0"
   },
-  "backgroundTips": [
-    "You can fill your cursors with a numbered or alphabetic sequence using {{ 'sequence-creator:open' | keystroke }}"
-  ],
   "main": "./lib/main",
   "files": [
     "keymaps",
@@ -49,6 +46,13 @@
       "description": "A series of letters used to generate a character sequence.",
       "type": "string",
       "default": "abcdefghijklmnopqrstuvwxyz"
+    }
+  },
+  "providedServices": {
+    "background-tips.provider": {
+      "versions": {
+        "1.0.0": "provideBackgroundTips"
+      }
     }
   },
   "devDependencies": {
