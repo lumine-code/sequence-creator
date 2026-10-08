@@ -123,4 +123,61 @@ describe("sequence-creator", () => {
       expect(view.simulator.textContent).toContain("Error:");
     });
   });
+
+  describe("configured alphabet rollover", () => {
+    beforeEach(() => {
+      editor.setText("\n\n");
+      editor.setCursorBufferPosition([0, 0]);
+      editor.addCursorAtBufferPosition([1, 0]);
+      editor.addCursorAtBufferPosition([2, 0]);
+    });
+
+    it("uses the configured first letter when a lowercase sequence rolls over", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      runSequence("z+");
+      expect(editor.getText()).toBe("z\nxx\nxy");
+      expect(view.isVisible()).toBe(false);
+    });
+
+    it("preserves uppercase through the configured rollover", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      runSequence("Z+");
+      expect(editor.getText()).toBe("Z\nXX\nXY");
+    });
+
+    it("uses the configured first letter for a carry across multiple positions", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      runSequence("zz+");
+      expect(editor.getText()).toBe("zz\nxxx\nxxy");
+    });
+
+    it("preserves the configured order instead of selecting the Latin alphabet", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "cba");
+      runSequence("a+");
+      expect(editor.getText()).toBe("a\ncc\ncb");
+    });
+
+    it("shows the same configured rollover in the preview and insertion", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      view.setText("z+");
+      advanceClock(20);
+      expect(view.simulator.textContent).toBe("z, xx, xy");
+      lumine.commands.dispatch(view.element, "core:confirm");
+      expect(editor.getText()).toBe("z\nxx\nxy");
+    });
+
+    it("preserves rollover with the default alphabet", () => {
+      runSequence("z+");
+      expect(editor.getText()).toBe("z\naa\nab");
+    });
+
+    it("keeps an empty configured alphabet invalid for character sequences", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "");
+      runSequence("z+");
+      expect(editor.getText()).toBe("\n\n");
+      expect(view.simulator.classList.contains("text-error")).toBe(true);
+      expect(view.simulator.textContent).toContain("not in the configured alphabet");
+      expect(view.isVisible()).toBe(true);
+    });
+  });
 });
