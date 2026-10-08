@@ -124,6 +124,37 @@ describe("sequence-creator", () => {
     });
   });
 
+  describe("repeat bucket preview and insertion", () => {
+    for (const [input, expected] of [
+      ["1^2", ["1", "1", "2", "2", "3"]],
+      ["a^2", ["a", "a", "b", "b", "c"]],
+      ["1^10000000", ["1", "1", "1"]],
+      ["a^10000000", ["a", "a", "a"]],
+      ["X-2^10000000", ["X", "X", "X", "X"]],
+    ]) {
+      it(`previews, confirms and undoes the repeated values for ${input}`, () => {
+        if (input.startsWith("X")) lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+        const original = Array(expected.length).fill("old").join("\n");
+        editor.setText(original);
+        editor.setSelectedBufferRanges(
+          Array.from({ length: expected.length }, (_, row) => [
+            [row, 0],
+            [row, 3],
+          ]),
+        );
+        editor.getBuffer().clearUndoStack();
+        view.setText(input);
+        advanceClock(20);
+        expect(view.simulator.textContent).toBe(expected.join(", "));
+        lumine.commands.dispatch(view.element, "core:confirm");
+        expect(editor.getText()).toBe(expected.join("\n"));
+        expect(view.isVisible()).toBe(false);
+        editor.undo();
+        expect(editor.getText()).toBe(original);
+      });
+    }
+  });
+
   describe("configured alphabet rollover", () => {
     beforeEach(() => {
       editor.setText("\n\n");
