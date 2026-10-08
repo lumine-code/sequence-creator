@@ -248,5 +248,30 @@ describe("sequence-creator", () => {
       editor.undo();
       expect(editor.getText()).toBe("old\nold\nold\nold");
     });
+
+    it("supports positive steps with a single-character alphabet", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "x");
+      selectEntries(3);
+      runSequence("x+2");
+      expect(editor.getText()).toBe("x\nxxx\nxxxxx");
+    });
+
+    it("wraps a single-character alphabet without changing uppercase", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "x");
+      selectEntries(3);
+      runSequence("X-");
+      expect(editor.getText()).toBe("X\nX\nX");
+    });
+
+    it("reports an unrepresentable unary output without changing selections", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "x");
+      selectEntries(3);
+      view.setText(`x+1${"0".repeat(100)}`);
+      advanceClock(20);
+      expect(view.simulator.classList.contains("text-error")).toBe(true);
+      lumine.commands.dispatch(view.element, "core:confirm");
+      expect(editor.getText()).toBe("old\nold\nold");
+      expect(view.isVisible()).toBe(true);
+    });
   });
 });
