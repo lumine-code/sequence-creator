@@ -41,6 +41,8 @@ The input expression follows the syntax:
 | repeat   | 1           | an index repeat count as positive integer                                                 |
 | flags    | _empty_     | a mix of letters:<br/>`!` reorder cursors by position<br/>`@` print plus sign if positive |
 
+Alphabetic decrement borrows across positions: `aa-` produces `aa, z, y, …`. Below the first character, values wrap around the configured alphabet: `a-` produces `a, z, y, …` by default, and `x-` with `xyz` produces `x, z, y, x, …`. Preview and insertion follow the same rule.
+
 Examples with a cursor count of `5`:
 
 ```

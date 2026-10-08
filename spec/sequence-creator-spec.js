@@ -180,4 +180,73 @@ describe("sequence-creator", () => {
       expect(view.isVisible()).toBe(true);
     });
   });
+
+  describe("alphabetic decrement and wrapping", () => {
+    function selectEntries(count) {
+      editor.setText(Array(count).fill("old").join("\n"));
+      editor.setSelectedBufferRanges(
+        Array.from({ length: count }, (_, row) => [
+          [row, 0],
+          [row, 3],
+        ]),
+      );
+    }
+
+    it("borrows from a longer alphabetic value before continuing downward", () => {
+      selectEntries(3);
+      runSequence("aa-");
+      expect(editor.getText()).toBe("aa\nz\ny");
+    });
+
+    it("wraps below the first default character", () => {
+      selectEntries(4);
+      runSequence("b-");
+      expect(editor.getText()).toBe("b\na\nz\ny");
+    });
+
+    it("wraps through the configured alphabet in its configured order", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      selectEntries(4);
+      runSequence("x-");
+      expect(editor.getText()).toBe("x\nz\ny\nx");
+    });
+
+    it("retains uppercase while borrowing", () => {
+      selectEntries(3);
+      runSequence("AA-");
+      expect(editor.getText()).toBe("AA\nZ\nY");
+    });
+
+    it("preserves custom steps and repeat counts while wrapping", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      selectEntries(6);
+      runSequence("X-2^2");
+      expect(editor.getText()).toBe("X\nX\nY\nY\nZ\nZ");
+    });
+
+    it("supports a negative increment step through the wrap boundary", () => {
+      selectEntries(4);
+      runSequence("a+-1");
+      expect(editor.getText()).toBe("a\nz\ny\nx");
+    });
+
+    it("retains the aligned character case when a mixed-case value borrows", () => {
+      selectEntries(3);
+      runSequence("aC-3");
+      expect(editor.getText()).toBe("aC\nZ\nW");
+    });
+
+    it("uses wrapping in the preview and replaces selections in one undo step", () => {
+      lumine.config.set("sequence-creator.alphabetSequence", "xyz");
+      selectEntries(4);
+      editor.getBuffer().clearUndoStack();
+      view.setText("x-");
+      advanceClock(20);
+      expect(view.simulator.textContent).toBe("x, z, y, x");
+      lumine.commands.dispatch(view.element, "core:confirm");
+      expect(editor.getText()).toBe("x\nz\ny\nx");
+      editor.undo();
+      expect(editor.getText()).toBe("old\nold\nold\nold");
+    });
+  });
 });
