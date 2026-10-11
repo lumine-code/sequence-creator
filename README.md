@@ -23,6 +23,8 @@ Commands available in `lumine-workspace`:
 
 - `sequence-creator:open`: open the sequence creator window.
 
+The command captures the invoking editor before opening the dialog. Application-menu and command-palette invocations use the active editor at dispatch; changing panes afterward keeps the accepted insertion target.
+
 ## Usage
 
 The input expression follows the syntax:
