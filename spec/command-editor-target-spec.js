@@ -10,7 +10,7 @@ describe("Sequence Creator command editor targets", () => {
     jasmine.attachToDOM(lumine.workspace.getElement());
     first = await lumine.workspace.open();
     firstPane = lumine.workspace.paneForItem(first);
-    secondPane = firstPane.splitRight({ copyActiveItem: false });
+    secondPane = firstPane.splitRight();
     second = await lumine.workspace.open();
     for (const editor of [first, second]) {
       editor.setText("x\nx\n");
