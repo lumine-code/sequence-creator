@@ -22,7 +22,9 @@
           "submenu": [
             {
               "label": "Insert Sequence…",
-              "command": "sequence-creator:open"
+              "command": "sequence-creator:open",
+              "group": "insert",
+              "order": 10
             }
           ]
         }
