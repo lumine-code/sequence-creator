@@ -13,6 +13,10 @@ Type a short expression and a preview of the generated sequence is shown before 
 - **Repeat option**: repeat each value multiple times.
 - **Live preview**: simulate the sequence while typing.
 
+![Insert a padded numeric sequence at multiple cursors.](.github/demo.png)
+
+![Generated file numbers inserted at all five cursors.](.github/demo-2.png)
+
 ## Installation
 
 To install `sequence-creator` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/sequence-creator`.

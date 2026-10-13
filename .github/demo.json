@@ -1,0 +1,23 @@
+{
+  "title": "sequence-creator",
+  "description": "Insert a padded numeric sequence at multiple cursors.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "4d0e1f8f35b07bed57f0c883b7b3a3f81c7ca737",
+  "mode": "normal",
+  "fontSettings": "default",
+  "themeSourceRevision": "6564a9e21899b5541e9c8f8006f9be6d6d72e6ad",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Insert a padded numeric sequence at multiple cursors.",
+      "width": 1100,
+      "height": 340
+    },
+    {
+      "file": "demo-2.png",
+      "label": "Generated file numbers inserted at all five cursors.",
+      "width": 1100,
+      "height": 340
+    }
+  ]
+}
