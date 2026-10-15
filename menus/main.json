@@ -7,7 +7,7 @@
           "label": "Sequence Creator",
           "submenu": [
             {
-              "label": "Open",
+              "label": "Insert Sequence…",
               "command": "sequence-creator:open"
             }
           ]
