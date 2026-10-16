@@ -61,4 +61,15 @@ describe("Sequence Creator command editor targets", () => {
     expect(first.getText()).toBe("x\nx\n");
     expect(second.getText()).toBe("x\nx\n");
   });
+  it("leaves readonly editors outside the command and shortcut scope", () => {
+    const target = first.getElement();
+    expect(
+      lumine.keymaps.findKeyBindings({ target, command: "sequence-creator:open" }).length,
+    ).toBeGreaterThan(0);
+    target.setAttribute("readonly", "");
+    expect(lumine.commands.canDispatch(target, "sequence-creator:open")).toBe(false);
+    expect(
+      lumine.keymaps.findKeyBindings({ target, command: "sequence-creator:open" }).length,
+    ).toBe(0);
+  });
 });
