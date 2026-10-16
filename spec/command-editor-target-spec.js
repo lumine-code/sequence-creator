@@ -45,15 +45,20 @@ describe("Sequence Creator command editor targets", () => {
     expect(first.getText()).toBe("x\nx\n");
   });
 
-  it("keeps the accepted workspace editor while queued modal construction runs", async () => {
-    await confirm(lumine.workspace.getElement(), secondPane);
+  it("keeps the initiating editor while queued modal construction runs", async () => {
+    await confirm(first.element, secondPane);
     expect(first.getText()).toBe("x7\nx8\n");
     expect(second.getText()).toBe("x\nx\n");
   });
 
-  it("uses the active editor for an ordinary workspace invocation", async () => {
-    await confirm(lumine.workspace.getElement());
-    expect(first.getText()).toBe("x7\nx8\n");
+  it("does not open a dialog from an unrelated workspace target", async () => {
+    expect(
+      lumine.commands.canDispatch(lumine.workspace.getElement(), "sequence-creator:open"),
+    ).toBe(false);
+    lumine.commands.dispatch(lumine.workspace.getElement(), "sequence-creator:open");
+    await Promise.resolve();
+    expect(main.views.size).toBe(0);
+    expect(first.getText()).toBe("x\nx\n");
     expect(second.getText()).toBe("x\nx\n");
   });
 });

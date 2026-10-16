@@ -23,7 +23,7 @@ To install `sequence-creator` search for it in the Install pane of the Lumine se
 
 ## Commands
 
-Commands available in `lumine-workspace`:
+Commands available in `lumine-text-editor:not([mini]):not([readonly])`:
 
 - `sequence-creator:open`: open the sequence creator window.
 
