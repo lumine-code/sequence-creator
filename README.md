@@ -101,6 +101,8 @@ Output:
   aac, aaw, aaq, abk, ace
 ```
 
+Sequence input and the configured alphabet are limited to 4 Ki UTF-16 units; an alphabetic start is limited to 256 units. Generated items are checked before padding or unary expansion against 1 Mi UTF-16 units each, and the complete operation is limited to 8 Mi units and 100,000 selections. Oversized drafts remain editable and no text is inserted when any item fails. All replacements are prepared before one undoable publication; preparation yields approximately every 4 ms and cancels if the input, target or selections change. Long preview labels show their first 120 characters and exact length; insertion always uses the complete generated value.
+
 ## Contributing
 
 Got ideas to make this package better, found a bug, or want to help add new features? Just drop your thoughts on GitHub. Any feedback is welcome!

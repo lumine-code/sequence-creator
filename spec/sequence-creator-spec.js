@@ -35,6 +35,76 @@ describe("sequence-creator", () => {
     expect(view.isVisible()).toBe(false);
   });
 
+  it("rejects an oversized draft before reading while leaving it editable", () => {
+    view.setText("x".repeat(4097));
+    const model = view.textEditor.getModel();
+    const read = spyOn(model, "getText").and.throwError("Oversized input read");
+    view.handleEdit();
+    view.handleDone();
+    expect(read).not.toHaveBeenCalled();
+    expect(view.isVisible()).toBe(true);
+    expect(model.getBuffer().getLength()).toBe(4097);
+    expect(view.simulator.textContent).toContain("4,096");
+    read.and.callThrough();
+    view.setText("1");
+    view.handleDone();
+    expect(editor.getText()).toBe("1");
+  });
+
+  it("checks padding expansion before padStart allocation", () => {
+    const pad = spyOn(String.prototype, "padStart").and.throwError("Unbounded padding");
+    expect(() => mainModule.leftPadding("1", Number.MAX_SAFE_INTEGER, "0")).toThrowError(
+      /Padded item/,
+    );
+    expect(pad).not.toHaveBeenCalled();
+  });
+
+  it("prepares every value before editing when a late unary item exceeds the limit", async () => {
+    jasmine.useRealClock();
+    lumine.config.set("sequence-creator.alphabetSequence", "x");
+    const original = Array(10).fill("old").join("\n");
+    editor.setText(original);
+    editor.setSelectedBufferRanges(
+      Array.from({ length: 10 }, (_, row) => [
+        [row, 0],
+        [row, 3],
+      ]),
+    );
+    const ranges = editor.getSelectedBufferRanges();
+    view.setText("x+150000");
+    await mainModule.exec("x+150000");
+    expect(editor.getText()).toBe(original);
+    expect(editor.getSelectedBufferRanges()).toEqual(ranges);
+    expect(view.isVisible()).toBe(true);
+    expect(view.simulator.textContent).toContain("Generated item");
+  });
+
+  it("rejects aggregate output and cancels prepared work when the target changes", async () => {
+    jasmine.useRealClock();
+    const original = Array(10).fill("old").join("\n");
+    editor.setText(original);
+    editor.setSelectedBufferRanges(
+      Array.from({ length: 10 }, (_, row) => [
+        [row, 0],
+        [row, 3],
+      ]),
+    );
+    view.setText("1");
+    const text = "x".repeat(1024 * 1024);
+    const calculate = spyOn(mainModule, "calculateValue").and.returnValue(text);
+    await mainModule.exec("1");
+    expect(editor.getText()).toBe(original);
+    expect(view.simulator.textContent).toContain("Complete generated sequence");
+    calculate.and.callThrough();
+    let now = 0;
+    spyOn(performance, "now").and.callFake(() => (now += 5));
+    const pending = mainModule.exec("1");
+    editor.setCursorBufferPosition([0, 0]);
+    await pending;
+    expect(editor.getText()).toBe(original);
+    expect(view.simulator.textContent).toContain("changed");
+  });
+
   describe("sequence insertion", () => {
     it("inserts an incrementing number sequence at each cursor", () => {
       placeCursors();
