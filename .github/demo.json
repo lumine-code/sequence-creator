@@ -1,9 +1,9 @@
 {
   "title": "sequence-creator",
   "description": "Insert a padded numeric sequence at multiple cursors.",
-  "recordedOn": "2026-10-16",
-  "sourceRevision": "273d36056f325713aad61a17c2cd0073d1a2c6f4",
-  "themeSourceRevision": "828c35ac1816466699effa6f7cf7eedccc930ff9",
+  "recordedOn": "2026-10-30",
+  "sourceRevision": "96013266cc1fc2f97f31f2681f5bb5041413192d",
+  "themeSourceRevision": "484213c82bbf567e2cb7cd5f85c5d73965346809",
   "mode": "normal",
   "fontSettings": "default",
   "scenario": "demo.js",
@@ -11,8 +11,8 @@
   "environment": {
     "platform": "win32",
     "arch": "x64",
-    "electron": "44.7.1",
-    "chrome": "152.0.7977.149",
+    "electron": "45.0.0",
+    "chrome": "156.0.8078.48",
     "devicePixelRatio": 1,
     "locale": "en-GB",
     "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
@@ -24,22 +24,22 @@
   "privacy": { "version": 1, "location": "neutral", "textChecked": true },
   "sources": {
     "editor": {
-      "revision": "f8d8badf72a1a2e010c2c5d76306bade6c5fefd0",
+      "revision": "19fdcde4394653d73d9b561d2b7db0540df25c98",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "package": {
-      "revision": "273d36056f325713aad61a17c2cd0073d1a2c6f4",
+      "revision": "96013266cc1fc2f97f31f2681f5bb5041413192d",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "sequence-creator": {
-      "revision": "273d36056f325713aad61a17c2cd0073d1a2c6f4",
+      "revision": "96013266cc1fc2f97f31f2681f5bb5041413192d",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     },
     "one-theme": {
-      "revision": "828c35ac1816466699effa6f7cf7eedccc930ff9",
+      "revision": "484213c82bbf567e2cb7cd5f85c5d73965346809",
       "dirty": false,
       "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
     }
@@ -56,14 +56,14 @@
       "label": "Insert a padded numeric sequence at multiple cursors.",
       "width": 1100,
       "height": 340,
-      "sha256": "ae35fccf8ea4c57cbc2c2c83a8ac9fa8919f86df8efeedf7ddb48170d90039b2"
+      "sha256": "86a7628ed684f2e7be8f229305680ff289a2602fc3706ac8ee21d1158ba425a1"
     },
     {
       "file": "demo-2.png",
       "label": "Generated file numbers inserted at all five cursors.",
       "width": 1100,
       "height": 340,
-      "sha256": "a9c6ecc4455a199d20775a29c55f075cea227cfd1275aad6d6ab7bb96fcdbb86"
+      "sha256": "43ca68abf97d696aed388016680103eb5162a4f9785669bede23b7112181c357"
     }
   ]
 }
