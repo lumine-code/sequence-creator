@@ -183,6 +183,25 @@ describe("sequence-creator", () => {
   });
 
   describe("preview simulation", () => {
+    it("hides a stale preview immediately for an oversized edit and restores it after correction", async () => {
+      placeCursors();
+      view.setText("1");
+      advanceClock(20);
+      expect(view.simulator.textContent).toBe("1, 2, 3");
+      const model = view.textEditor.getModel();
+      const read = spyOn(model, "getText").and.throwError("Oversized input read");
+      view.setText("x".repeat(4097));
+      expect(view.preview.hidden).toBe(true);
+      await view.inputDialog.updateComponent();
+      expect(view.element.textContent).toContain("4096");
+      expect(read).not.toHaveBeenCalled();
+      read.and.callThrough();
+      view.setText("5");
+      advanceClock(20);
+      expect(view.preview.hidden).toBe(false);
+      expect(view.simulator.textContent).toBe("5, 6, 7");
+    });
+
     it("shows a preview of the sequence while typing", () => {
       placeCursors();
       view.setText("1+1");
