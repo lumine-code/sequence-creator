@@ -28,6 +28,17 @@ describe("sequence-creator", () => {
 
   it("opens the modal panel on sequence-creator:open", () => {
     expect(view.isVisible()).toBe(true);
+    expect(view.element.classList.contains("select-list")).toBe(false);
+    expect(view.inputDialog.getContentElement()).toBe(view.preview);
+  });
+
+  it("preserves its draft and resumes the preview after reopening", () => {
+    view.setText("01+2");
+    view.hide();
+    mainModule.open(editor);
+    expect(view.getText()).toBe("01+2");
+    expect(view.simulator.textContent).toBe("01");
+    expect(view.preview.hidden).toBe(false);
   });
 
   it("closes the modal panel on core:cancel", () => {
@@ -35,7 +46,7 @@ describe("sequence-creator", () => {
     expect(view.isVisible()).toBe(false);
   });
 
-  it("rejects an oversized draft before reading while leaving it editable", () => {
+  it("rejects an oversized draft before reading while leaving it editable", async () => {
     view.setText("x".repeat(4097));
     const model = view.textEditor.getModel();
     const read = spyOn(model, "getText").and.throwError("Oversized input read");
@@ -44,7 +55,8 @@ describe("sequence-creator", () => {
     expect(read).not.toHaveBeenCalled();
     expect(view.isVisible()).toBe(true);
     expect(model.getBuffer().getLength()).toBe(4097);
-    expect(view.simulator.textContent).toContain("4,096");
+    await view.inputDialog.updateComponent();
+    expect(view.element.textContent).toContain("4096");
     read.and.callThrough();
     view.setText("1");
     view.handleDone();
@@ -76,7 +88,7 @@ describe("sequence-creator", () => {
     expect(editor.getText()).toBe(original);
     expect(editor.getSelectedBufferRanges()).toEqual(ranges);
     expect(view.isVisible()).toBe(true);
-    expect(view.simulator.textContent).toContain("Generated item");
+    expect(view.inputDialog.getStatus().message).toContain("Generated item");
   });
 
   it("rejects aggregate output and cancels prepared work when the target changes", async () => {
@@ -94,7 +106,7 @@ describe("sequence-creator", () => {
     const calculate = spyOn(mainModule, "calculateValue").and.returnValue(text);
     await mainModule.exec("1");
     expect(editor.getText()).toBe(original);
-    expect(view.simulator.textContent).toContain("Complete generated sequence");
+    expect(view.inputDialog.getStatus().message).toContain("Complete generated sequence");
     calculate.and.callThrough();
     let now = 0;
     spyOn(performance, "now").and.callFake(() => (now += 5));
@@ -102,7 +114,7 @@ describe("sequence-creator", () => {
     editor.setCursorBufferPosition([0, 0]);
     await pending;
     expect(editor.getText()).toBe(original);
-    expect(view.simulator.textContent).toContain("changed");
+    expect(view.inputDialog.getStatus().message).toContain("changed");
   });
 
   describe("sequence insertion", () => {
@@ -189,8 +201,8 @@ describe("sequence-creator", () => {
     it("reports invalid input as an error", () => {
       view.setText("1+1#99");
       advanceClock(20);
-      expect(view.simulator.classList.contains("text-error")).toBe(true);
-      expect(view.simulator.textContent).toContain("Error:");
+      expect(view.inputDialog.getStatus().type).toBe("error");
+      expect(view.preview.hidden).toBe(true);
     });
   });
 
@@ -276,8 +288,8 @@ describe("sequence-creator", () => {
       lumine.config.set("sequence-creator.alphabetSequence", "");
       runSequence("z+");
       expect(editor.getText()).toBe("\n\n");
-      expect(view.simulator.classList.contains("text-error")).toBe(true);
-      expect(view.simulator.textContent).toContain("not in the configured alphabet");
+      expect(view.inputDialog.getStatus().type).toBe("error");
+      expect(view.inputDialog.getStatus().message).toContain("not in the configured alphabet");
       expect(view.isVisible()).toBe(true);
     });
   });
@@ -369,7 +381,7 @@ describe("sequence-creator", () => {
       selectEntries(3);
       view.setText(`x+1${"0".repeat(100)}`);
       advanceClock(20);
-      expect(view.simulator.classList.contains("text-error")).toBe(true);
+      expect(view.inputDialog.getStatus().type).toBe("error");
       lumine.commands.dispatch(view.element, "core:confirm");
       expect(editor.getText()).toBe("old\nold\nold");
       expect(view.isVisible()).toBe(true);
