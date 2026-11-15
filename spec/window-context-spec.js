@@ -17,6 +17,7 @@ describe("sequence dialogs in editor windows", () => {
     await lumine.commands.dispatch(first.getElement(), "sequence-creator:open");
     await lumine.commands.dispatch(second.getElement(), "sequence-creator:open");
     const main = lumine.packages.getActivePackage("sequence-creator").mainModule;
+    spyOn(main, "exec").and.callThrough();
     await conditionPromise(() => main.views.size === 2);
     const local = main.views.get(workspace.getMainWindow()).view;
     const remote = main.views.get(extra).view;
@@ -24,7 +25,9 @@ describe("sequence dialogs in editor windows", () => {
     expect(remote.element.ownerDocument).toBe(extra.getDocument());
     local.setText("10");
     remote.setText("20");
-    await lumine.commands.dispatch(remote.textEditor, "core:confirm");
+    lumine.commands.dispatch(remote.textEditor, "core:confirm");
+    expect(main.exec.calls.count()).toBe(1);
+    await main.exec.calls.mostRecent().returnValue;
     expect(second.getText()).toBe("20");
     expect(first.getText()).toBe("");
     expect(local.getText()).toBe("10");

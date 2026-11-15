@@ -11,12 +11,20 @@ describe("sequence-creator", () => {
     const activation = lumine.packages.activatePackage("sequence-creator");
     lumine.commands.dispatch(editorElement, "sequence-creator:open");
     mainModule = (await activation).mainModule;
+    spyOn(mainModule, "exec").and.callThrough();
     view = mainModule.view;
   });
 
-  function runSequence(input) {
-    view.setText(input);
+  async function confirmSequence() {
+    const calls = mainModule.exec.calls.count();
     lumine.commands.dispatch(view.element, "core:confirm");
+    expect(mainModule.exec.calls.count()).toBe(calls + 1);
+    await mainModule.exec.calls.mostRecent().returnValue;
+  }
+
+  async function runSequence(input) {
+    view.setText(input);
+    await confirmSequence();
   }
 
   function placeCursors() {
@@ -118,50 +126,65 @@ describe("sequence-creator", () => {
   });
 
   describe("sequence insertion", () => {
-    it("inserts an incrementing number sequence at each cursor", () => {
+    it("inserts an incrementing number sequence at each cursor", async () => {
       placeCursors();
-      runSequence("1");
+      await runSequence("1");
       expect(editor.getText()).toBe("x1\nx2\nx3\n");
       expect(view.isVisible()).toBe(false);
     });
 
-    it("supports a custom step", () => {
+    it("supports a custom step", async () => {
       placeCursors();
-      runSequence("10+2");
+      await runSequence("10+2");
       expect(editor.getText()).toBe("x10\nx12\nx14\n");
     });
 
-    it("supports decrementing sequences", () => {
+    it("supports decrementing sequences", async () => {
       placeCursors();
-      runSequence("5-2");
+      await runSequence("5-2");
       expect(editor.getText()).toBe("x5\nx3\nx1\n");
     });
 
-    it("supports padding", () => {
+    it("supports padding", async () => {
       placeCursors();
-      runSequence("27+3:0>4");
+      await runSequence("27+3:0>4");
       expect(editor.getText()).toBe("x0027\nx0030\nx0033\n");
     });
 
-    it("supports a custom radix", () => {
+    it("supports a custom radix", async () => {
       placeCursors();
-      runSequence("10+1#16");
+      await runSequence("10+1#16");
       expect(editor.getText()).toBe("xa\nxb\nxc\n");
     });
 
-    it("supports repeat counts", () => {
+    it("waits for confirmation when sequence preparation yields before applying edits", async () => {
+      jasmine.useRealClock();
       placeCursors();
-      runSequence("1^2");
+      let now = 0;
+      const clock = spyOn(performance, "now").and.callFake(() => (now += 5));
+      const completion = runSequence("10+1#16");
+      expect(typeof mainModule.exec.calls.mostRecent().returnValue?.then).toBe("function");
+      expect(editor.getText()).toBe("x\nx\nx\n");
+      expect(view.isVisible()).toBe(true);
+      clock.and.callThrough();
+      await completion;
+      expect(editor.getText()).toBe("xa\nxb\nxc\n");
+      expect(view.isVisible()).toBe(false);
+    });
+
+    it("supports repeat counts", async () => {
+      placeCursors();
+      await runSequence("1^2");
       expect(editor.getText()).toBe("x1\nx1\nx2\n");
     });
 
-    it("inserts alphabetic sequences", () => {
+    it("inserts alphabetic sequences", async () => {
       placeCursors();
-      runSequence("a+2");
+      await runSequence("a+2");
       expect(editor.getText()).toBe("xa\nxc\nxe\n");
     });
 
-    it("replaces selected text with the sequence values", () => {
+    it("replaces selected text with the sequence values", async () => {
       editor.setText("foo\nbar\nbaz\n");
       editor.setSelectedBufferRanges([
         [
@@ -177,7 +200,7 @@ describe("sequence-creator", () => {
           [2, 3],
         ],
       ]);
-      runSequence("7");
+      await runSequence("7");
       expect(editor.getText()).toBe("7\n8\n9\n");
     });
   });
@@ -233,7 +256,7 @@ describe("sequence-creator", () => {
       ["a^10000000", ["a", "a", "a"]],
       ["X-2^10000000", ["X", "X", "X", "X"]],
     ]) {
-      it(`previews, confirms and undoes the repeated values for ${input}`, () => {
+      it(`previews, confirms and undoes the repeated values for ${input}`, async () => {
         if (input.startsWith("X")) lumine.config.set("sequence-creator.alphabetSequence", "xyz");
         const original = Array(expected.length).fill("old").join("\n");
         editor.setText(original);
@@ -247,7 +270,7 @@ describe("sequence-creator", () => {
         view.setText(input);
         advanceClock(20);
         expect(view.simulator.textContent).toBe(expected.join(", "));
-        lumine.commands.dispatch(view.element, "core:confirm");
+        await confirmSequence();
         expect(editor.getText()).toBe(expected.join("\n"));
         expect(view.isVisible()).toBe(false);
         editor.undo();
@@ -264,48 +287,48 @@ describe("sequence-creator", () => {
       editor.addCursorAtBufferPosition([2, 0]);
     });
 
-    it("uses the configured first letter when a lowercase sequence rolls over", () => {
+    it("uses the configured first letter when a lowercase sequence rolls over", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
-      runSequence("z+");
+      await runSequence("z+");
       expect(editor.getText()).toBe("z\nxx\nxy");
       expect(view.isVisible()).toBe(false);
     });
 
-    it("preserves uppercase through the configured rollover", () => {
+    it("preserves uppercase through the configured rollover", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
-      runSequence("Z+");
+      await runSequence("Z+");
       expect(editor.getText()).toBe("Z\nXX\nXY");
     });
 
-    it("uses the configured first letter for a carry across multiple positions", () => {
+    it("uses the configured first letter for a carry across multiple positions", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
-      runSequence("zz+");
+      await runSequence("zz+");
       expect(editor.getText()).toBe("zz\nxxx\nxxy");
     });
 
-    it("preserves the configured order instead of selecting the Latin alphabet", () => {
+    it("preserves the configured order instead of selecting the Latin alphabet", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "cba");
-      runSequence("a+");
+      await runSequence("a+");
       expect(editor.getText()).toBe("a\ncc\ncb");
     });
 
-    it("shows the same configured rollover in the preview and insertion", () => {
+    it("shows the same configured rollover in the preview and insertion", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
       view.setText("z+");
       advanceClock(20);
       expect(view.simulator.textContent).toBe("z, xx, xy");
-      lumine.commands.dispatch(view.element, "core:confirm");
+      await confirmSequence();
       expect(editor.getText()).toBe("z\nxx\nxy");
     });
 
-    it("preserves rollover with the default alphabet", () => {
-      runSequence("z+");
+    it("preserves rollover with the default alphabet", async () => {
+      await runSequence("z+");
       expect(editor.getText()).toBe("z\naa\nab");
     });
 
-    it("keeps an empty configured alphabet invalid for character sequences", () => {
+    it("keeps an empty configured alphabet invalid for character sequences", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "");
-      runSequence("z+");
+      await runSequence("z+");
       expect(editor.getText()).toBe("\n\n");
       expect(view.inputDialog.getStatus().type).toBe("error");
       expect(view.inputDialog.getStatus().message).toContain("not in the configured alphabet");
@@ -324,84 +347,84 @@ describe("sequence-creator", () => {
       );
     }
 
-    it("borrows from a longer alphabetic value before continuing downward", () => {
+    it("borrows from a longer alphabetic value before continuing downward", async () => {
       selectEntries(3);
-      runSequence("aa-");
+      await runSequence("aa-");
       expect(editor.getText()).toBe("aa\nz\ny");
     });
 
-    it("wraps below the first default character", () => {
+    it("wraps below the first default character", async () => {
       selectEntries(4);
-      runSequence("b-");
+      await runSequence("b-");
       expect(editor.getText()).toBe("b\na\nz\ny");
     });
 
-    it("wraps through the configured alphabet in its configured order", () => {
+    it("wraps through the configured alphabet in its configured order", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
       selectEntries(4);
-      runSequence("x-");
+      await runSequence("x-");
       expect(editor.getText()).toBe("x\nz\ny\nx");
     });
 
-    it("retains uppercase while borrowing", () => {
+    it("retains uppercase while borrowing", async () => {
       selectEntries(3);
-      runSequence("AA-");
+      await runSequence("AA-");
       expect(editor.getText()).toBe("AA\nZ\nY");
     });
 
-    it("preserves custom steps and repeat counts while wrapping", () => {
+    it("preserves custom steps and repeat counts while wrapping", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
       selectEntries(6);
-      runSequence("X-2^2");
+      await runSequence("X-2^2");
       expect(editor.getText()).toBe("X\nX\nY\nY\nZ\nZ");
     });
 
-    it("supports a negative increment step through the wrap boundary", () => {
+    it("supports a negative increment step through the wrap boundary", async () => {
       selectEntries(4);
-      runSequence("a+-1");
+      await runSequence("a+-1");
       expect(editor.getText()).toBe("a\nz\ny\nx");
     });
 
-    it("retains the aligned character case when a mixed-case value borrows", () => {
+    it("retains the aligned character case when a mixed-case value borrows", async () => {
       selectEntries(3);
-      runSequence("aC-3");
+      await runSequence("aC-3");
       expect(editor.getText()).toBe("aC\nZ\nW");
     });
 
-    it("uses wrapping in the preview and replaces selections in one undo step", () => {
+    it("uses wrapping in the preview and replaces selections in one undo step", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "xyz");
       selectEntries(4);
       editor.getBuffer().clearUndoStack();
       view.setText("x-");
       advanceClock(20);
       expect(view.simulator.textContent).toBe("x, z, y, x");
-      lumine.commands.dispatch(view.element, "core:confirm");
+      await confirmSequence();
       expect(editor.getText()).toBe("x\nz\ny\nx");
       editor.undo();
       expect(editor.getText()).toBe("old\nold\nold\nold");
     });
 
-    it("supports positive steps with a single-character alphabet", () => {
+    it("supports positive steps with a single-character alphabet", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "x");
       selectEntries(3);
-      runSequence("x+2");
+      await runSequence("x+2");
       expect(editor.getText()).toBe("x\nxxx\nxxxxx");
     });
 
-    it("wraps a single-character alphabet without changing uppercase", () => {
+    it("wraps a single-character alphabet without changing uppercase", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "x");
       selectEntries(3);
-      runSequence("X-");
+      await runSequence("X-");
       expect(editor.getText()).toBe("X\nX\nX");
     });
 
-    it("reports an unrepresentable unary output without changing selections", () => {
+    it("reports an unrepresentable unary output without changing selections", async () => {
       lumine.config.set("sequence-creator.alphabetSequence", "x");
       selectEntries(3);
       view.setText(`x+1${"0".repeat(100)}`);
       advanceClock(20);
       expect(view.inputDialog.getStatus().type).toBe("error");
-      lumine.commands.dispatch(view.element, "core:confirm");
+      await confirmSequence();
       expect(editor.getText()).toBe("old\nold\nold");
       expect(view.isVisible()).toBe(true);
     });

@@ -20,6 +20,7 @@ describe("Sequence Creator command editor targets", () => {
     firstPane.activate();
     expect(lumine.workspace.getActiveTextEditor()).toBe(first);
     main = (await lumine.packages.activatePackage("sequence-creator")).mainModule;
+    spyOn(main, "exec").and.callThrough();
   });
 
   afterEach(async () => {
@@ -37,6 +38,8 @@ describe("Sequence Creator command editor targets", () => {
     expect(main.view.isVisible()).toBe(true);
     main.view.setText("7");
     lumine.commands.dispatch(main.view.element, "core:confirm");
+    expect(main.exec.calls.count()).toBe(1);
+    await main.exec.calls.mostRecent().returnValue;
   }
 
   it("inserts into the inactive split editor that invoked the command", async () => {
